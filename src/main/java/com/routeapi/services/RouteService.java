@@ -3,7 +3,6 @@ package com.routeapi.services;
 import java.util.List;
 import java.util.Map;
 
-import com.routeapi.model.Cost;
 import com.routeapi.model.Edge;
 import com.routeapi.model.Node;
 import com.routeapi.model.Path;
@@ -13,13 +12,13 @@ public interface RouteService {
 	
 	void createRoute(List<Node> nodes, List<Edge> edges);
 
-	void addNodes(long routeID, List<String> newNodeNames, Map<String, Cost> adjecentNodes);
+	void addNodes(long routeID, String newNodeName, Map<String, Object> map) throws Exception;
 	
-	void deleteNodes(long routeID, List<String> nodeNames);
+	void deleteNodes(long routeID, List<String> nodeNames) throws Exception;
 	
-	void updateCosts(List<Edge> updatedEdges);
+	void updateCosts(long routeID, List<List<Object>> updatedEdges) throws Exception;
 	
-	Path getOptimalPath(long routeID, String sourceNode, String destinationNode);
+	Path getOptimalPath(long routeID, String sourceNode, String destinationNode) throws Exception;
 	
 	List<Route> getAllRoutes();
 }

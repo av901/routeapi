@@ -6,8 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,8 +28,8 @@ public class RouteController {
 	@Autowired
 	private RouteService routeService;
 	
-	@RequestMapping(value="/add", method=RequestMethod.POST)
-	public @ResponseBody String addNewRoute(@RequestBody RouteData data) {
+	@RequestMapping(value="/addRoute", method=RequestMethod.POST)
+	public @ResponseBody ResponseEntity<String> addNewRoute(@RequestBody RouteData data) {
 		List<String> nodes = data.getNodes();
 		List<List<Object>> edges = data.getEdges();
 		boolean valid = true;
@@ -55,16 +57,53 @@ public class RouteController {
 				Edge newEdge = new Edge();
 				newEdge.setNode1(nodeMap.get(node1));
 				newEdge.setNode2(nodeMap.get(node2));
-				newEdge.setLenght((double)edge.get(2));
-				newEdge.setSpeedFactor((double)edge.get(3));
+				newEdge.setLength(Double.parseDouble(edge.get(2).toString()));
+				newEdge.setSpeedFactor(Double.parseDouble(edge.get(3).toString()));
 				edgeList.add(newEdge);
 			}
 			routeService.createRoute(nodeList, edgeList);
-			return "success";
+			return new ResponseEntity<String>("Success", HttpStatus.OK);
 		}
-		return "failure";
+		return new ResponseEntity<String>("Failure", HttpStatus.BAD_REQUEST);
+		
 	}
 	
+	@RequestMapping(value="/addNode", method=RequestMethod.POST)
+	public @ResponseBody ResponseEntity<String> addNewNode(@RequestBody Map<String, Object> jobj) {
+		int routeID = (int)jobj.get("route_id");
+		String nodeName = (String)jobj.get("node_name");
+		Map<String, Object> adjNodes = (Map<String, Object>)jobj.get("adj_nodes");
+		try {
+			routeService.addNodes(routeID, nodeName, adjNodes);
+		} catch (Exception e) {
+			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+		return new ResponseEntity<String>("Success", HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/deleteNode", method=RequestMethod.POST)
+	public @ResponseBody ResponseEntity<String> deteteNode(@RequestBody Map<String, Object> jobj) {
+		int routeID = (int)jobj.get("route_id");
+		List<String> nodes = (List<String>)jobj.get("nodes");
+		try {
+			routeService.deleteNodes(routeID, nodes);
+		} catch (Exception e) {
+			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+		return new ResponseEntity<String>("Success", HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/updateEdges", method=RequestMethod.POST)
+	public @ResponseBody ResponseEntity<String> updateEdge(@RequestBody Map<String, Object> jobj) {
+		int routeID = (int)jobj.get("route_id");
+		List<List<Object>> edges = (List<List<Object>>)jobj.get("edges");
+		try {
+			routeService.updateCosts(routeID, edges);
+		} catch (Exception e) {
+			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+		return new ResponseEntity<String>("Success", HttpStatus.OK);
+	}
 	
 	
 }

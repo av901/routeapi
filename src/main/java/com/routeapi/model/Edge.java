@@ -31,7 +31,7 @@ public class Edge {
 	private Node node2 ;
 	
 	@Column(name = "length", nullable=false)
-	private double lenght;
+	private double length;
 	
 	@Column(name = "speed_factor", nullable=false)
 	private double speedFactor;
@@ -68,12 +68,12 @@ public class Edge {
 		this.node2 = node2;
 	}
 
-	public double getLenght() {
-		return lenght;
+	public double getLength() {
+		return length;
 	}
 
-	public void setLenght(double lenght) {
-		this.lenght = lenght;
+	public void setLength(double length) {
+		this.length = length;
 	}
 
 	public double getSpeedFactor() {

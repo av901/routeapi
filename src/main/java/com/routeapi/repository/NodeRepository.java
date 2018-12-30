@@ -7,5 +7,7 @@ import com.routeapi.model.Node;
 
 @Repository
 public interface NodeRepository extends CrudRepository<Node, Long>{
+	
+	void deleteById(long nodeId);
 
 }
