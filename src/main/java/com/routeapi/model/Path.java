@@ -1,5 +1,16 @@
 package com.routeapi.model;
 
-public class Path {
+import java.util.List;
 
+public class Path {
+	
+	private List<Edge> edges;
+	
+	public Path(List<Edge> edges){
+		this.edges = edges;
+	}
+
+	public List<Edge> getEdges(){
+		return edges;
+	}
 }

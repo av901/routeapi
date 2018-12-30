@@ -6,7 +6,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 
 @SpringBootApplication
-@ComponentScan({"com.routeapi.controller"})
+@ComponentScan({"com.routeapi.controller", "com.routeapi.services"})
 public class App 
 {
 	public static void main(String[] args) {

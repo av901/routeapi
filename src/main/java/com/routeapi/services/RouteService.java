@@ -5,17 +5,21 @@ import java.util.Map;
 
 import com.routeapi.model.Cost;
 import com.routeapi.model.Edge;
+import com.routeapi.model.Node;
 import com.routeapi.model.Path;
+import com.routeapi.model.Route;
 
 public interface RouteService {
 	
-	void createRoute(List<String> nodeNames, List<Edge> edges);
+	void createRoute(List<Node> nodes, List<Edge> edges);
 
-	void addNode(String routeID, String newNodeName, Map<String, Cost> adjecentNodes);
+	void addNodes(long routeID, List<String> newNodeNames, Map<String, Cost> adjecentNodes);
 	
-	void deleteNode(String routeID, List<String> nodeName);
+	void deleteNodes(long routeID, List<String> nodeNames);
 	
 	void updateCosts(List<Edge> updatedEdges);
 	
-	Path getOptimalPath(String routeID, String sourceNode, String destinationNode);
+	Path getOptimalPath(long routeID, String sourceNode, String destinationNode);
+	
+	List<Route> getAllRoutes();
 }
