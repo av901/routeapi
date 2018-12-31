@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.routeapi.model.Edge;
 import com.routeapi.model.Node;
+import com.routeapi.model.Path;
 import com.routeapi.model.RouteData;
 import com.routeapi.services.RouteService;
 
@@ -105,5 +105,16 @@ public class RouteController {
 		return new ResponseEntity<String>("Success", HttpStatus.OK);
 	}
 	
-	
+	@RequestMapping(value="/optimalPath", method=RequestMethod.POST)
+	public @ResponseBody Object getOptimalPath(@RequestBody Map<String, Object> jobj) {
+		int routeID = (int)jobj.get("route_id");
+		String source = (String)jobj.get("source");
+		String dest = (String)jobj.get("destination");
+		try {
+			Path path =  routeService.getOptimalPath(routeID, source, dest);
+			return path;
+		} catch (Exception e) {
+			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+	}
 }

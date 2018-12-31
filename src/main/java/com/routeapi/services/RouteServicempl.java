@@ -23,32 +23,27 @@ import com.routeapi.repository.RouteRepository;
 public class RouteServicempl implements RouteService {
 	
 	@Autowired
-	RouteRepository routeRepository;
+	RepositoryHolder repoHolder;
 	
-	@Autowired
-	EdgeRepository edgeRepository;
-	
-	@Autowired
-	NodeRepository nodeRepository;
 
 	public void createRoute(List<Node> nodes, List<Edge> edges) {
 		Route route = new Route();
 		route.setNodes(nodes);
 		route.setEdges(edges);
-		Route savedRoute = routeRepository.save(route);
+		Route savedRoute = repoHolder.routeRepository.save(route);
 		nodes.stream().forEach(node ->{
 			node.setRoute(savedRoute);
-			nodeRepository.save(node);
+			repoHolder.nodeRepository.save(node);
 		});
 		edges.stream().forEach(edge -> {
 			edge.setRoute(savedRoute);
-			edgeRepository.save(edge);
+			repoHolder.edgeRepository.save(edge);
 		});
 	}
 	
 	@Override
 	public void addNodes(long routeID, String newNodeName, Map<String, Object> adjacentNodes) throws Exception {
-		Route route = routeRepository.findById(routeID);
+		Route route = repoHolder.routeRepository.findById(routeID);
 		if(route == null)
 			throw new Exception("No route found for ID : " + routeID);
 		List<Edge> exstingEdges = route.getEdges();
@@ -83,12 +78,12 @@ public class RouteServicempl implements RouteService {
 			}
 		}
 		existingNodes.add(node2);
-		routeRepository.save(route);
+		repoHolder.routeRepository.save(route);
 	}
 
 	@Override
 	public void deleteNodes(long routeID, List<String> nodeNames) throws Exception {
-		Route route = routeRepository.findById(routeID);
+		Route route = repoHolder.routeRepository.findById(routeID);
 		if(route == null)
 			throw new Exception("No route found for ID : " + routeID);
 		List<Node> existingNodes = route.getNodes();
@@ -101,16 +96,16 @@ public class RouteServicempl implements RouteService {
 			throw new Exception("Some nodes not found in the route");
 		for(Entry<String, Node> entry : nodeMap.entrySet()) {
 			long nodeId = entry.getValue().getId();
-			List<Edge> edges = edgeRepository.findByNode1IdOrNode2Id(nodeId, nodeId);
-			edgeRepository.delete(edges);
-			nodeRepository.deleteById(nodeId);
+			List<Edge> edges = repoHolder.edgeRepository.findByNode1IdOrNode2Id(nodeId, nodeId);
+			repoHolder.edgeRepository.delete(edges);
+			repoHolder.nodeRepository.deleteById(nodeId);
 			existingNodes.remove(entry.getValue());
 		}
-		routeRepository.save(route);
+		repoHolder.routeRepository.save(route);
 	}
 	
 	public void updateCosts(long routeID, List<List<Object>> updatedEdges) throws Exception{
-		Route route = routeRepository.findById(routeID);
+		Route route = repoHolder.routeRepository.findById(routeID);
 		if(route == null)
 			throw new Exception("No route found for ID : " + routeID);
 		List<Node> existingNodes = route.getNodes();
@@ -137,18 +132,17 @@ public class RouteServicempl implements RouteService {
 			double speedFactor = Double.parseDouble(edgeDetail.get(3).toString());
 			long node1Id = nodeMap.get(node1Name).getId();
 			long node2Id = nodeMap.get(node2Name).getId();
-			Edge edge = edgeRepository.findByNode1IdAndNode2IdOrNode2IdAndNode1Id(node1Id, node2Id, node1Id, node2Id);
+			Edge edge = repoHolder.edgeRepository.findByNode1IdAndNode2IdOrNode2IdAndNode1Id(node1Id, node2Id, node1Id, node2Id);
 			if(edge != null) {
 				edge.setLength(length);
 				edge.setSpeedFactor(speedFactor);
-				edgeRepository.save(edge);
+				repoHolder.edgeRepository.save(edge);
 			}
 		}		
 	}
 
 	public Path getOptimalPath(long routeID, String sourceNode, String destinationNode) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		return OptimalRouteFinder.getInstance().findRoute(routeID, sourceNode, destinationNode, repoHolder.routeRepository);
 	}
 
 	@Override
