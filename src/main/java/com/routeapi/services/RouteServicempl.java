@@ -147,8 +147,7 @@ public class RouteServicempl implements RouteService {
 
 	@Override
 	public List<Route> getAllRoutes() {
-		// TODO Auto-generated method stub
-		return null;
+		return repoHolder.routeRepository.findAll();
 	}
 
 	

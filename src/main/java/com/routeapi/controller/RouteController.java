@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.routeapi.model.Edge;
 import com.routeapi.model.Node;
 import com.routeapi.model.Path;
+import com.routeapi.model.Route;
 import com.routeapi.model.RouteData;
 import com.routeapi.services.RouteService;
 
@@ -113,6 +114,16 @@ public class RouteController {
 		try {
 			Path path =  routeService.getOptimalPath(routeID, source, dest);
 			return path;
+		} catch (Exception e) {
+			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@RequestMapping(value="/allRoute")
+	public @ResponseBody Object getAllRoute() {
+		try {
+			List<Route> routes =  routeService.getAllRoutes();
+			return routes;
 		} catch (Exception e) {
 			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
